@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.StdRandom;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -7,8 +9,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] queue;
     private int size = 0;
 
-    public RandomizedQueue(int capacicty) {
-        queue = (Item[]) new Object[capacicty];
+    public RandomizedQueue() {
+        queue = (Item[]) new Object[1];
     }
 
     public boolean isEmpty() {
@@ -84,7 +86,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public static void main(String[] args) {
-        RandomizedQueue<String> rQueue = new RandomizedQueue<>(2);
+        RandomizedQueue<String> rQueue = new RandomizedQueue<>();
         String hello = "hello";
         String world = "world";
         String my = "my";

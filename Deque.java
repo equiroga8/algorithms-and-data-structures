@@ -54,8 +54,10 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeFirst() {
         if (size == 0) throw new NoSuchElementException("Deque is empty");
         Item item = first.item;
+        if (first.previous != null) {
+            first.previous = null;
+        }
         first = first.next;
-        first.previous = null;
         if (size == 1) last = null;
         size--;
         return item;
@@ -65,8 +67,10 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeLast() {
         if (size == 0) throw new NoSuchElementException("Deque is empty");
         Item item = last.item;
+        if (last.next != null) {
+            last.next = null;
+        }
         last = last.previous;
-        last.next = null;
         if (size == 1) first = null;
         size--;
         return item;
@@ -115,9 +119,10 @@ public class Deque<Item> implements Iterable<Item> {
         String hello = "hello";
         String world = "world";
         String my = "my";
-        deque.addLast(world);
-        deque.addFirst(hello);
-        deque.addFirst(my);
+        deque.addLast(hello);
+        System.out.println(deque.size);
+        System.out.println(deque.first.item);
+        System.out.println(deque.last.item);
         deque.removeLast();
         System.out.println(deque.size);
         System.out.println(deque.first.item);
