@@ -4,8 +4,6 @@
  *  Last modified:     1/1/2019
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -45,10 +43,10 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        int tilesDisplaced = 0;
+        int tilesDisplaced = -1;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
-                if (j * size + i + 1 != tiles[j][i] && 0 != tiles[size - 1][size - 1]) {
+                if (j * size + i + 1 != tiles[j][i]) {
                     tilesDisplaced++;
                 }
             }
@@ -61,10 +59,7 @@ public class Board {
         int totalDistanceDisplaced = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
-                if (tiles[j][i] == 0) {
-                    totalDistanceDisplaced += 2 * (size - 1) - j - i;
-                }
-                else {
+                if (tiles[j][i] != 0) {
                     int y = (tiles[j][i] - 1) / size;
                     int x = tiles[j][i] - y * size - 1;
                     totalDistanceDisplaced += Math.abs(x - i) + Math.abs(y - j);
@@ -80,10 +75,13 @@ public class Board {
         outerloop:
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[0].length; j++) {
-                if (j * size + i + 1 != tiles[i][j] || 0 != tiles[size - 1][size - 1]) {
-                    isGoal = false;
-                    break outerloop;
+                if (i != size - 1 && j != size - 1) {
+                    if (j * size + i + 1 != tiles[j][i]) {
+                        isGoal = false;
+                        break outerloop;
+                    }
                 }
+
             }
         }
         return isGoal;
@@ -114,62 +112,28 @@ public class Board {
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
 
-        int i = StdRandom.uniform(this.size);
-        int j = StdRandom.uniform(this.size);
-
-        while (this.tiles[i][j] == 0) {
-            i = StdRandom.uniform(this.size);
-            j = StdRandom.uniform(this.size);
+        Board boardClone = clone(this);
+        if (boardClone.tiles[0][0] != 0 && boardClone.tiles[size - 1][0] != 0) {
+            swap(boardClone, 0, 0, size - 1, 0);
         }
-        int swap;
-        Board boardClone = null;
-        for (int n = 0; n < 4; n++) {
-            boardClone = Board.this.clone(this);
-            try {
-                switch (n) {
-                    case 0:
-                        if (boardClone.tiles[i - 1][j] != 0) {
-                            swap = boardClone.tiles[i - 1][j];
-                            boardClone.tiles[i - 1][j] = boardClone.tiles[i][j];
-                            boardClone.tiles[i][j] = swap;
-                        }
-                        break;
-                    case 1:
-                        if (boardClone.tiles[i][j - 1] != 0) {
-                            swap = boardClone.tiles[i][j - 1];
-                            boardClone.tiles[i][j - 1] = boardClone.tiles[i][j];
-                            boardClone.tiles[i][j] = swap;
-                        }
-                        break;
-                    case 2:
-                        if (boardClone.tiles[i + 1][j] != 0) {
-                            swap = boardClone.tiles[i + 1][j];
-                            boardClone.tiles[i + 1][j] = boardClone.tiles[i][j];
-                            boardClone.tiles[i][j] = swap;
-                        }
-                        break;
-                    case 3:
-                        if (boardClone.tiles[i][j + 1] != 0) {
-                            swap = boardClone.tiles[i][j + 1];
-                            boardClone.tiles[i][j + 1] = boardClone.tiles[i][j];
-                            boardClone.tiles[i][j] = swap;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            }
-            catch (ArrayIndexOutOfBoundsException e) {
-                continue;
-            }
+        else if (boardClone.tiles[0][0] != 0 && boardClone.tiles[0][size - 1] != 0) {
+            swap(boardClone, 0, 0, 0, size - 1);
+        }
+        else {
+            swap(boardClone, size - 1, 0, 0, size - 1);
         }
 
         return boardClone;
     }
 
+    private void swap(Board board, int i, int j, int x, int y) {
+        int swap = board.tiles[i][j];
+        board.tiles[i][j] = board.tiles[x][y];
+        board.tiles[x][y] = swap;
+    }
+
     private class BoardIterable implements Iterable<Board> {
-        Board board = null;
+        private Board board = null;
 
         public BoardIterable(Board board) {
             this.board = board;
@@ -182,8 +146,8 @@ public class Board {
 
     private class BoardList implements Iterator<Board> {
 
-        ArrayList<Board> boardList = new ArrayList<>();
-        int current;
+        private ArrayList<Board> boardList = new ArrayList<>();
+        private int current;
 
         public BoardList(Board board) {
             int x = 0, y = 0;
@@ -261,10 +225,9 @@ public class Board {
     // unit testing (not graded)
     public static void main(String[] args) {
         int[][] tiles = {
-                { 7, 2, 3, 4 },
-                { 1, 6, 0, 8 },
-                { 9, 10, 11, 12 },
-                { 13, 14, 15, 5 }
+                { 1, 0, 2 },
+                { 7, 5, 4 },
+                { 8, 6, 3 }
         };
 
         Board board = new Board(tiles);
@@ -272,12 +235,14 @@ public class Board {
         System.out.println(board.toString());
         System.out.println("Hamming: " + board.hamming());
         System.out.println("Manhattan: " + board.manhattan());
-        Iterator<Board> itBoard = board.neighbors().iterator();
+/*        Iterator<Board> itBoard = board.neighbors().iterator();
         System.out.println(itBoard.next().toString());
-        System.out.println(itBoard.next().toString());
+        System.out.println(itBoard.next().toString());*/
+
         System.out.println(board.toString());
         System.out.println("twin:");
         System.out.println(board.twin().toString());
+        System.out.println(board.isGoal());
 
 
     }
