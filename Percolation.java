@@ -15,6 +15,8 @@ public class Percolation {
 
     // creates n-by-n grid, with all sites initially blocked
     public Percolation(int n) {
+        if (n <= 0)
+            throw new IllegalArgumentException("Perlocation size cannot be less than 1");
         this.size = n + 1;
         this.sites = new WeightedQuickUnionUF(n * n + 2);
         this.grid = new boolean[n + 1][n + 1];
@@ -31,7 +33,7 @@ public class Percolation {
     // opens the site (row, col) if it is not open already
     public void open(int row, int col) {
         if (row <= 0 || row >= size || col <= 0 || col >= size)
-            throw new IndexOutOfBoundsException("row or column index out of bounds");
+            throw new IllegalArgumentException("row or column index out of bounds");
         if (!grid[row][col]) {
             grid[row][col] = true;
             numberOfOpenSites++;
@@ -42,8 +44,6 @@ public class Percolation {
     }
 
     private void connectAdjacentSites(int row, int col) {
-        if (row <= 0 || row >= size || col <= 0 || col >= size)
-            throw new IndexOutOfBoundsException("row or column index out of bounds");
         int connectingSite = index(row, col);
         if (row - 1 != 0 && grid[row - 1][col]) sites.union(connectingSite, index(row - 1, col));
         if (row + 1 != size && grid[row + 1][col])
@@ -60,14 +60,14 @@ public class Percolation {
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         if (row <= 0 || row >= size || col <= 0 || col >= size)
-            throw new IndexOutOfBoundsException("row or column index out of bounds");
+            throw new IllegalArgumentException("row or column index out of bounds");
         return grid[row][col];
     }
 
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         if (row <= 0 || row >= size || col <= 0 || col >= size)
-            throw new IndexOutOfBoundsException("row or column index out of bounds");
+            throw new IllegalArgumentException("row or column index out of bounds");
         return sites.connected(0, index(row, col));
     }
 
