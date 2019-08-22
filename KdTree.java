@@ -172,21 +172,14 @@ public class KdTree {
         if (shortestDistance > distance) {
             shortestDistance = distance;
             nearestPoint = node.p;
-            if (node.vertical) {
-                if (p.x() >= node.p.x()) {
-                    nearest(p, node.rt, shortestDistance);
-                }
-                else {
-                    nearest(p, node.lb, shortestDistance);
-                }
+
+            if (p.x() >= node.p.x() || p.y() >= node.p.y()) {
+                nearest(p, node.rt, shortestDistance);
+                nearest(p, node.lb, shortestDistance);
             }
             else {
-                if (p.y() >= node.p.y()) {
-                    nearest(p, node.rt, shortestDistance);
-                }
-                else {
-                    nearest(p, node.lb, shortestDistance);
-                }
+                nearest(p, node.lb, shortestDistance);
+                nearest(p, node.rt, shortestDistance);
             }
         }
     }
@@ -234,7 +227,6 @@ public class KdTree {
     }
 
     public static void main(String[] args) {
-
         KdTree kdt = new KdTree();
         Point2D p1 = new Point2D(0.7, 0.2);
         Point2D p2 = new Point2D(0.5, 0.4);
